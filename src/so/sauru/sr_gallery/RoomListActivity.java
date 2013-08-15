@@ -3,6 +3,8 @@ package so.sauru.sr_gallery;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 /**
  * An activity representing a list of Rooms. This activity has different
@@ -72,6 +74,25 @@ public class RoomListActivity extends FragmentActivity implements
 			Intent detailIntent = new Intent(this, RoomDetailActivity.class);
 			detailIntent.putExtra(RoomDetailFragment.ARG_ITEM_ID, id);
 			startActivity(detailIntent);
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.gallery, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.action_settings:
+				Intent settingsIntent = new Intent(this, SettingsActivity.class);
+				startActivity(settingsIntent);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 }

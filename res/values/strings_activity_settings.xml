@@ -1,0 +1,34 @@
+<resources>
+
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string><string name="pref_general_title">Welcome</string><string name="pref_general_desc">Welcome to SR Gallery</string>
+
+    <!-- Example settings for Data & Sync -->
+    
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_gallorg">Gallery Organizer</string>
+    <string name="pref_gallery_root_title">Gallery Root</string>
+    <string name="pref_gallery_root_desc">Folder contains albums. (default is Pictures on external SD card)</string>
+    <string name="pref_gallery_root_default">/storage/extSdCard/Pictures</string><string-array name="pref_pictures_titles">
+        <item>Generic (/sdcard/Pictures)</item>
+        <item>SGS3 Internal (/storage/sdcard0/Pictures )</item>
+        <item>SGS3 External (/storage/extSdCard/Pictures)</item>
+    </string-array>
+    <string-array name="pref_pictures_values">
+        <item >/sdcard/Pictures</item>
+        <item >/storage/sdcard0/Pictures</item>
+        <item >/storage/extSdCard/Pictures</item>
+    </string-array>
+    <string name="pref_gallorg_title">Gallorg Usage</string>
+    <string name="pref_gallorg_desc">Usage: share photos from any gallery app then select Photo Organize as handler</string>
+    
+    
+    <string name="pref_header_extra">Extra</string>
+
+</resources>

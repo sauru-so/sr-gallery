@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <EditTextPreference android:title="@string/pref_gallorg_title" android:summary="@string/pref_gallorg_desc" android:key="usage" android:selectable="false" android:defaultValue="@string/pref_gallorg_desc"/><ListPreference android:title="@string/pref_gallery_root_title" android:defaultValue="@string/pref_gallery_root_default" android:entryValues="@array/pref_pictures_values" android:entries="@array/pref_pictures_titles" android:key="gallorg_root"/>
+    
+    
+
+</PreferenceScreen>

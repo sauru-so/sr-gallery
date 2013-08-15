@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class OrganizeActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -76,6 +80,17 @@ public class OrganizeActivity extends FragmentActivity implements
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
+
+		/* real works */
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (Intent.ACTION_SEND.equals(intent.getAction())) {
+			if (extras != null) {
+				Uri fileUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
+				Toast.makeText(this, fileUri.toString(), Toast.LENGTH_LONG);
+				Log.d("GALLORG", "SEND URI:" + fileUri.toString());
+			}
+		}
 	}
 
 	@Override
@@ -83,6 +98,18 @@ public class OrganizeActivity extends FragmentActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.organize, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.action_settings:
+				Intent settingsIntent = new Intent(this, SettingsActivity.class);
+				startActivity(settingsIntent);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 
 	@Override
