@@ -30,6 +30,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".RoomListActivity" />
         </activity>
+        <activity
+            android:name="so.sauru.sr_gallery.OrganizeActivity"
+            android:label="@string/title_activity_organize" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <data android:mimeType="@string/mime_image_jpeg"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

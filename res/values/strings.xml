@@ -3,5 +3,11 @@
 
     <string name="app_name">SR Gallery</string>
     <string name="title_room_detail">Room Detail</string>
+    <string name="title_activity_organize">Photo Organizer</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_orgtab_1_file">File</string>
+    <string name="title_orgtab_2_meta">Meta</string>
+    <string name="title_orgtab_3_exif">EXIF</string>
+    <string name="mime_image_jpeg">image/jpeg</string>
 
 </resources>
