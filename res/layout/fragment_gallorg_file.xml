@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/activity_vertical_margin"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:scaleX="0.9"
+    android:shrinkColumns="1"
+    android:stretchColumns="1" >
+
+	<TextView
+		android:id="@+id/go_file_info_header"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/go_file_info"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:scaleX="1"
+		android:textStyle="bold" />
+
+	<TableRow
+		android:id="@+id/go_file_uri"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+
+		<TextView
+			android:id="@+id/go_file_uri_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right|center_vertical"
+			android:lines="1"
+			android:maxLines="1"
+			android:scrollHorizontally="false"
+			android:text="@string/go_file_uri" />
+
+		<EditText
+			android:id="@+id/go_file_uri_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="none"
+			android:singleLine="true"
+			android:textIsSelectable="true" />
+
+	</TableRow>
+
+	<TableRow
+		android:id="@+id/go_file_path"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+
+		<TextView
+			android:id="@+id/go_file_path_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right|center_vertical"
+			android:lines="1"
+			android:maxLines="1"
+			android:scrollHorizontally="false"
+			android:text="@string/go_file_path" />
+
+		<EditText
+			android:id="@+id/go_file_path_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="none"
+			android:singleLine="true"
+			android:textIsSelectable="true" />
+
+	</TableRow>
+
+	<TableRow
+		android:id="@+id/go_file_name"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+
+		<TextView
+			android:id="@+id/go_file_name_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right|center_vertical"
+			android:lines="1"
+			android:maxLines="1"
+			android:scrollHorizontally="false"
+			android:text="@string/go_file_name" />
+
+		<EditText
+			android:id="@+id/go_file_name_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:inputType="none"
+			android:singleLine="true"
+			android:textIsSelectable="true" />
+
+	</TableRow>
+
+	<TextView
+		android:id="@+id/go_file_more_header"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/go_file_more"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:scaleX="1"
+		android:textStyle="bold" />
+
+	<TableRow
+		android:id="@+id/go_file_size"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+
+		<TextView
+			android:id="@+id/go_file_size_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right|center_vertical"
+			android:text="@string/go_file_size" />
+
+		<EditText
+			android:id="@+id/go_file_size_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:singleLine="true"
+			android:textIsSelectable="true"
+			android:inputType="none" />
+
+	</TableRow>
+
+	<TableRow
+		android:id="@+id/go_file_date"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+
+		<TextView
+			android:id="@+id/go_file_date_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right|center_vertical"
+			android:text="@string/go_file_date" />
+
+		<EditText
+			android:id="@+id/go_file_date_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:singleLine="true"
+			android:textIsSelectable="true"
+			android:inputType="none" />
+
+	</TableRow>
+
+	<TableRow
+		android:id="@+id/go_file_chksum"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content" >
+
+		<TextView
+			android:id="@+id/go_file_hash_label"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="right|center_vertical"
+			android:text="@string/go_file_hash" />
+
+		<EditText
+			android:id="@+id/go_file_hash_value"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:singleLine="true"
+			android:textIsSelectable="true"
+			android:inputType="none" />
+
+	</TableRow>
+
+	<Spinner
+	    android:id="@+id/og_albums_spinner"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" />
+
+</TableLayout>

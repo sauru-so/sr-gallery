@@ -8,5 +8,13 @@
     <string name="title_orgtab_1_file">File</string>
     <string name="title_orgtab_2_meta">Meta</string>
     <string name="title_orgtab_3_exif">EXIF</string>
+    <string name="go_file_info">File Information</string>
+    <string name="go_file_more">File Information (Extra)</string>
+    <string name="go_file_uri">URI</string>
+    <string name="go_file_path">Path</string>
+    <string name="go_file_name">Filename</string>
+    <string name="go_file_size">Size</string>
+    <string name="go_file_hash">MD5</string>
+    <string name="go_file_date">Date</string>
 
 </resources>
