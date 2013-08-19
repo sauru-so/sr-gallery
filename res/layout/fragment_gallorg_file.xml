@@ -169,9 +169,39 @@
 
 	</TableRow>
 
-	<Spinner
-		android:id="@+id/og_albums_spinner"
+	<LinearLayout
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
+		android:layout_height="wrap_content" >
+		<TextView
+			android:id="@+id/textView1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_gravity="right|center_vertical"
+			android:text="@string/go_dest_dir" />
+		<Spinner
+			android:id="@+id/go_albums_spinner"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_weight="1" />
+	</LinearLayout>
 
+    <LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="fill_parent" >
+		<Button
+			android:id="@+id/go_action_cancel"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:layout_weight="1"
+			android:text="@string/go_action_cancel" />
+		<Button
+			android:id="@+id/go_action_move"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="bottom"
+			android:layout_weight="1"
+			android:text="@string/go_action_move" />
+	</LinearLayout>
 </TableLayout>

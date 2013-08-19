@@ -316,7 +316,7 @@ public class OrganizeActivity extends FragmentActivity implements
 			dirStrList.add(getString(R.string.go_list_new)); /* for new folder creation. */
 			Log.d(GALLORG, dirStrList.toString());
 
-			spAlbums = (Spinner) rV.findViewById(R.id.og_albums_spinner);
+			spAlbums = (Spinner) rV.findViewById(R.id.go_albums_spinner);
 			aaAlbums = new ArrayAdapter <CharSequence> (this
 					.getActivity(),
 					android.R.layout.simple_spinner_dropdown_item, dirStrList);
