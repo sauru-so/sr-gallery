@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="@dimen/activity_horizontal_margin"
-    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:scaleX="0.9"
-    android:shrinkColumns="1"
-    android:stretchColumns="1" >
+    android:orientation="vertical">
+
+    <TableLayout
+        android:id="@+id/go_single_image"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:padding="0dp"
+        android:scaleX="0.9"
+        android:shrinkColumns="1"
+        android:stretchColumns="1" >
 
 	<TextView
 		android:id="@+id/go_file_info_header"
@@ -168,9 +176,42 @@
 			android:inputType="none" />
 
 	</TableRow>
+    </TableLayout>
 
 	<LinearLayout
-		android:layout_width="wrap_content"
+		android:id="@+id/go_image_thumbs"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical" >
+
+		<TextView
+			android:id="@+id/go_files_header"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textStyle="bold"
+			android:text="@string/go_files" />
+		<TableLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="#000000" >
+
+			<TableRow
+			    android:id="@+id/image_thumbs_dummy"
+			    android:layout_width="match_parent"
+			    android:layout_height="wrap_content" >
+
+				<ImageView
+					android:id="@+id/imageView1"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@drawable/ic_launcher" />
+			</TableRow>
+		</TableLayout>
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="fill_parent"
 		android:layout_height="wrap_content" >
 		<TextView
 			android:id="@+id/textView1"
@@ -182,14 +223,15 @@
 			android:text="@string/go_dest_dir" />
 		<Spinner
 			android:id="@+id/go_albums_spinner"
-			android:layout_width="wrap_content"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="1" />
 	</LinearLayout>
 
-    <LinearLayout
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="fill_parent" >
+
 		<Button
 			android:id="@+id/go_action_cancel"
 			android:layout_width="0dp"
@@ -205,4 +247,4 @@
 			android:layout_weight="1"
 			android:text="@string/go_action_move" />
 	</LinearLayout>
-</TableLayout>
+</LinearLayout>

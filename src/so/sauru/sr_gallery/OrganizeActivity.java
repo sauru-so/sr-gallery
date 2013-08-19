@@ -270,6 +270,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				etSize.setText(tF.length()/1024 + "KB");
 				etDate.setText(dF.format(new Date(tF.lastModified())));
 				etHash.setText("Not implemented yet");
+				rV.findViewById(R.id.go_image_thumbs).setVisibility(View.GONE);
 			} else if (uriList.size() > 0) {
 				etUri.setText("Bulk");
 				etPath.setText("Bulk");
@@ -278,6 +279,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				etUri.setText("Empty");
 				etPath.setText("Empty");
 				etName.setText("Empty");
+				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
 				Log.e(GALLORG, "Error! empty URI list: " + uriList.toString());
 				// TODO: more error handling here.
 			}

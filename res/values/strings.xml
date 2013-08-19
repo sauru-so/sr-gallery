@@ -11,6 +11,7 @@
     <string name="title_orgtab_3_exif">EXIF</string>
     <string name="go_file_info">File Information</string>
     <string name="go_file_more">File Information (Extra)</string>
+    <string name="go_files">Selected Images</string>
     <string name="go_file_uri">URI</string>
     <string name="go_file_path">Path</string>
     <string name="go_file_name">Filename</string>
