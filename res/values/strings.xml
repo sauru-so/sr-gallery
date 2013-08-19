@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">SR Gallery</string>
     <string name="title_room_detail">Room Detail</string>
     <string name="title_activity_organize">Photo Organizer</string>
     <string name="action_settings">Settings</string>
+    <string name="generic_ok">OK</string>
+    <string name="generic_cancel">Cancel</string>
     <string name="title_orgtab_1_file">File</string>
     <string name="title_orgtab_2_meta">Meta</string>
     <string name="title_orgtab_3_exif">EXIF</string>
@@ -16,5 +17,8 @@
     <string name="go_file_size">Size</string>
     <string name="go_file_hash">MD5</string>
     <string name="go_file_date">Date</string>
-
+    <string name="go_list_camera">&lt;Camera&gt;</string>
+    <string name="go_list_new">New</string>
+    <string name="go_newalbum_title">New Album</string>
+    <string name="go_newalbum_desc">Enter new album name.</string>
 </resources>

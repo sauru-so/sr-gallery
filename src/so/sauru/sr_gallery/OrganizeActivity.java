@@ -12,11 +12,15 @@ import java.util.Locale;
 import so.sauru.UriUtils;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -24,6 +28,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -60,7 +65,12 @@ public class OrganizeActivity extends FragmentActivity implements
 	/* my variables */
 	static ArrayList<Uri> uriList = new ArrayList<Uri> ();
 	ArrayList<File> fileList = new ArrayList<File> ();
-	static String GALLORG = "GallOrg";
+	static final String GALLORG = "GallOrg";
+	static String new_album = new String();
+	static File gallorg_root = null;
+	static File gallorg_dest = null;
+	static ArrayAdapter<CharSequence> aaAlbums;
+	static Spinner spAlbums;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -254,7 +264,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				Uri tU = uriList.get(0);
 				File tF = UriUtils.getFileFromUri(tU, this.getActivity());
 				SimpleDateFormat dF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-						Locale.KOREAN);
+						Locale.getDefault());
 				etUri.setText(tU.toString());
 				etPath.setText(tF.getParent());
 				etName.setText(tF.getName());
@@ -270,58 +280,101 @@ public class OrganizeActivity extends FragmentActivity implements
 				etPath.setText("Empty");
 				etName.setText("Empty");
 				Log.e(GALLORG, "Error! empty URI list: " + uriList.toString());
+				// TODO: more error handling here.
 			}
 
 			/** get directory from... **/
 			SharedPreferences prefs = PreferenceManager
 				.getDefaultSharedPreferences(this.getActivity());
-			File gRoot = new File(prefs.getString("gallorg_root", "/"));
-			Log.d(GALLORG, gRoot.getPath());
-			if (gRoot.getPath().equals("/")) {
+			gallorg_root = new File(prefs.getString("gallorg_root", "/"));
+			Log.d(GALLORG, gallorg_root.getPath());
+			if (gallorg_root.getPath().equals("/")) {
 				Log.e(GALLORG, "something wrong! gallery_root is not corrent!");
 				Toast.makeText(this.getActivity(),
 						"something wrong! bad gallery root!", Toast.LENGTH_SHORT).show();
 			}
 
 			/** generate album list from gallery root. **/
-			ArrayList<String> dirStrList = new ArrayList<String> ();
-			dirStrList.add("<Camera>"); /* to restore to Camera */
-			if (gRoot.exists() && gRoot.isDirectory()) {
+			ArrayList<CharSequence> dirStrList = new ArrayList<CharSequence> ();
+			dirStrList.add(getString(R.string.go_list_camera)); /* to restore to Camera */
+			if (gallorg_root.exists() && gallorg_root.isDirectory()) {
 				ArrayList<File> dirList = new ArrayList<File> (Arrays.
-						asList(gRoot.listFiles()));
+						asList(gallorg_root.listFiles()));
 				Collections.sort(dirList);
 				Iterator<File> e = dirList.iterator();
 				/* now just support 1-level subdirectory. */
 				while (e.hasNext()) {
-					dirStrList.add(((File) e.next()).getName());
+					File t = (File) e.next();
+					if (t.isDirectory()) {
+						dirStrList.add(t.getName());
+					}
 				}
+			} else {
+				Toast.makeText(getActivity(), "gallorg_root does not exist or...",
+						Toast.LENGTH_SHORT).show();
 			}
-			dirStrList.add("New"); /* for new folder creation. */
+			dirStrList.add(getString(R.string.go_list_new)); /* for new folder creation. */
 			Log.d(GALLORG, dirStrList.toString());
 
-			Spinner spAlbums = (Spinner) rV.findViewById(R.id.og_albums_spinner);
-			ArrayAdapter<String> aa = new ArrayAdapter <String> (this.getActivity(),
+			spAlbums = (Spinner) rV.findViewById(R.id.og_albums_spinner);
+			aaAlbums = new ArrayAdapter <CharSequence> (this
+					.getActivity(),
 					android.R.layout.simple_spinner_dropdown_item, dirStrList);
-			spAlbums.setAdapter(aa);
+			spAlbums.setAdapter(aaAlbums);
 			spAlbums.setOnItemSelectedListener(new OnAlbumSelectedListener());
 
 			return rV;
 		}
 
 		public class OnAlbumSelectedListener implements OnItemSelectedListener {
-
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view,
 					int pos, long id) {
-				// TODO Auto-generated method stub
-				String res = parent.getItemAtPosition(pos).toString();
-				Toast.makeText(parent.getContext(), "oops!" + res,
+				String selected = parent.getItemAtPosition(pos).toString();
+				if (selected.equals(getString(R.string.go_list_camera))) {
+					gallorg_dest = new File(Environment
+							.getExternalStoragePublicDirectory(Environment
+									.DIRECTORY_DCIM) + "/Camera");
+				} else if (selected.equals(getString(R.string.go_list_new))) {
+					getNewAlbum();
+					return;
+				} else {
+					gallorg_dest = new File(gallorg_root + "/" + selected);
+				}
+				Log.d(GALLORG, "gallorg dest is " + gallorg_dest.toString());
+				Toast.makeText(parent.getContext(), "dest is " + gallorg_dest.toString(),
 						Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
+			}
+
+			public void getNewAlbum() {
+				AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+				alert.setTitle(R.string.go_newalbum_title);
+				alert.setMessage(R.string.go_newalbum_desc);
+				final EditText input = new EditText(getActivity());
+				alert.setView(input);
+				alert.setPositiveButton(R.string.generic_ok, new DialogInterface
+						.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								new_album = input.getText().toString().trim();
+								Log.d(GALLORG, "new album name: " + new_album);
+								aaAlbums.add(new_album);
+								aaAlbums.notifyDataSetChanged();
+								spAlbums.setSelection(spAlbums.getCount() - 1);
+							}
+						});
+				alert.setNegativeButton(R.string.generic_cancel, new DialogInterface
+						.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.cancel();
+							}
+						});
+				alert.show();
 			}
 		}
 	}
