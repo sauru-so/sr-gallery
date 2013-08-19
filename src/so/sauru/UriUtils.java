@@ -18,10 +18,10 @@ public class UriUtils {
 		}
 
 		String[] projection = {
-				MediaStore.Images.ImageColumns.DATA
+				MediaStore.Images.Media.DATA
 		};
-		Cursor c = activity.managedQuery(uri, projection,
-				null, null, null);
+		Cursor c = activity.getContentResolver().query(uri,
+				projection, null, null, null);
 		if (c != null && c.moveToFirst()) {
 			filePath = c.getString(0);
 		}
