@@ -15,7 +15,6 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -327,7 +326,27 @@ public class OrganizeActivity extends FragmentActivity implements
 			spAlbums.setAdapter(aaAlbums);
 			spAlbums.setOnItemSelectedListener(new OnAlbumSelectedListener());
 
+			rV.findViewById(R.id.go_action_move)
+				.setOnClickListener(new OnBtnClickListener());
+			rV.findViewById(R.id.go_action_cancel)
+				.setOnClickListener(new OnBtnClickListener());
 			return rV;
+		}
+
+		public class OnBtnClickListener implements View.OnClickListener {
+			@Override
+			public void onClick(View v) {
+				switch (v.getId()) {
+				case R.id.go_action_move:
+					Toast.makeText(getActivity(), "MOVE", Toast.LENGTH_SHORT).show();
+					break;
+				case R.id.go_action_cancel:
+					Toast.makeText(getActivity(), "CANCEL", Toast.LENGTH_SHORT).show();
+					break;
+				default:
+					Toast.makeText(getActivity(), "WHAT", Toast.LENGTH_SHORT).show();	
+				}
+			}
 		}
 
 		public class OnAlbumSelectedListener implements OnItemSelectedListener {
