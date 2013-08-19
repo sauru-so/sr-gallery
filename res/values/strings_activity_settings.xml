@@ -16,9 +16,9 @@
     <string name="pref_gallery_root_title">Gallery Root</string>
     <string name="pref_gallery_root_desc">Folder contains albums. (default is Pictures on external SD card)</string>
     <string name="pref_gallery_root_default">/storage/extSdCard/Pictures</string><string-array name="pref_pictures_titles">
-        <item>Generic (/sdcard/Pictures)</item>
-        <item>SGS3 Internal (/storage/sdcard0/Pictures )</item>
-        <item>SGS3 External (/storage/extSdCard/Pictures)</item>
+        <item>Generic\n(/sdcard/Pictures)</item>
+        <item>SGS3 Internal\n(/storage/sdcard0/Pictures )</item>
+        <item>SGS3 External\n(/storage/extSdCard/Pictures)</item>
     </string-array>
     <string-array name="pref_pictures_values">
         <item >/sdcard/Pictures</item>
