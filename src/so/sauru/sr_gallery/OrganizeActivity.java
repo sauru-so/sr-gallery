@@ -285,14 +285,18 @@ public class OrganizeActivity extends FragmentActivity implements
 
 			/** get directory from... **/
 			SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this.getActivity());
-			gallorg_root = new File(prefs.getString("gallorg_root", "/"));
-			Log.d(GALLORG, gallorg_root.getPath());
-			if (gallorg_root.getPath().equals("/")) {
-				Log.e(GALLORG, "something wrong! gallery_root is not corrent!");
-				Toast.makeText(this.getActivity(),
-						"something wrong! bad gallery root!", Toast.LENGTH_SHORT).show();
+					.getDefaultSharedPreferences(getActivity());
+			String pref_gallery_root = prefs.getString("gallorg_root",
+					getString(R.string.pref_gallery_root_default));
+			if (pref_gallery_root.equals(getString(R.string
+					.pref_gallery_root_default))) {
+				gallorg_root = Environment
+						.getExternalStoragePublicDirectory(Environment
+						.DIRECTORY_PICTURES);
+			} else {
+				gallorg_root = new File(pref_gallery_root);
 			}
+			Log.d(GALLORG, gallorg_root.getPath());
 
 			/** generate album list from gallery root. **/
 			ArrayList<CharSequence> dirStrList = new ArrayList<CharSequence> ();
