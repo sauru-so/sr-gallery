@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -101,16 +102,19 @@ public class OrganizeActivity extends FragmentActivity implements
 					.setTabListener(this));
 		}
 
-		/* real works */
+		/* real works (added by me) started here... */
+		getUriList();
+	}
+
+	private void getUriList() {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
 		uriList.clear();
 		if (Intent.ACTION_SEND.equals(intent.getAction())) {
 			if (extras != null) {
-				Uri fileUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
-				Log.d(GALLORG, "SEND URI:" + fileUri.toString());
-				uriList.add(fileUri);
-				Log.d(GALLORG, "SEND URI.Path:" + fileUri.getPath());
+				Uri contentUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
+				Log.d(GALLORG, "SEND URI:" + contentUri.toString());
+				uriList.add(contentUri);
 			}
 		}
 	}
@@ -231,6 +235,7 @@ public class OrganizeActivity extends FragmentActivity implements
 		public FileSectionFragment() {
 		}
 
+		/** gallorg view with shared contents **/
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
@@ -248,7 +253,8 @@ public class OrganizeActivity extends FragmentActivity implements
 			if (uriList.size() == 1) {
 				Uri tU = uriList.get(0);
 				File tF = UriUtils.getFileFromUri(tU, this.getActivity());
-				SimpleDateFormat dF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat dF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+						Locale.KOREAN);
 				etUri.setText(tU.toString());
 				etPath.setText(tF.getParent());
 				etName.setText(tF.getName());
@@ -267,33 +273,58 @@ public class OrganizeActivity extends FragmentActivity implements
 			}
 
 			/** get directory from... **/
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+			SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this.getActivity());
 			File gRoot = new File(prefs.getString("gallorg_root", "/"));
 			Log.d(GALLORG, gRoot.getPath());
+			if (gRoot.getPath().equals("/")) {
+				Log.e(GALLORG, "something wrong! gallery_root is not corrent!");
+				Toast.makeText(this.getActivity(),
+						"something wrong! bad gallery root!", Toast.LENGTH_SHORT).show();
+			}
 
-			/* generate dir list */
+			/** generate album list from gallery root. **/
 			ArrayList<String> dirStrList = new ArrayList<String> ();
-			dirStrList.add("<Camera>");
+			dirStrList.add("<Camera>"); /* to restore to Camera */
 			if (gRoot.exists() && gRoot.isDirectory()) {
 				ArrayList<File> dirList = new ArrayList<File> (Arrays.
 						asList(gRoot.listFiles()));
 				Collections.sort(dirList);
 				Iterator<File> e = dirList.iterator();
+				/* now just support 1-level subdirectory. */
 				while (e.hasNext()) {
 					dirStrList.add(((File) e.next()).getName());
 				}
-				Log.d(GALLORG, dirStrList.toString());
 			}
-			dirStrList.add("New");
+			dirStrList.add("New"); /* for new folder creation. */
+			Log.d(GALLORG, dirStrList.toString());
 
 			Spinner spAlbums = (Spinner) rV.findViewById(R.id.og_albums_spinner);
 			ArrayAdapter<String> aa = new ArrayAdapter <String> (this.getActivity(),
 					android.R.layout.simple_spinner_dropdown_item, dirStrList);
 			spAlbums.setAdapter(aa);
-			//spAlbums.setOnItemSelectedListener(this);
+			spAlbums.setOnItemSelectedListener(new OnAlbumSelectedListener());
 
-			//Toast.makeText(this, uriList.get(0).toString(), Toast.LENGTH_LONG).show();
 			return rV;
+		}
+
+		public class OnAlbumSelectedListener implements OnItemSelectedListener {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int pos, long id) {
+				// TODO Auto-generated method stub
+				String res = parent.getItemAtPosition(pos).toString();
+				Toast.makeText(parent.getContext(), "oops!" + res,
+						Toast.LENGTH_SHORT).show();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				// TODO Auto-generated method stub
+			}
 		}
 	}
 }
+
+/* vim: set ts=2 sw=2: */
