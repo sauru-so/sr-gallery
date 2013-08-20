@@ -12,8 +12,6 @@
 		android:id="@+id/go_single_image"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="0dp"
-		android:padding="0dp"
 		android:shrinkColumns="1"
 		android:stretchColumns="1" >
 
@@ -24,6 +22,12 @@
 			android:text="@string/go_file_info"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textStyle="bold" />
+		<View
+			android:layout_width="fill_parent"
+			android:layout_height="2dp"
+			android:background="@color/holor_blue_light"
+			android:visibility="visible" />
+
 		<TableRow
 			android:id="@+id/go_file_uri"
 			android:layout_width="wrap_content"
@@ -90,6 +94,7 @@
 				android:singleLine="true"
 				android:textIsSelectable="true" />
 		</TableRow>
+
 		<TextView
 			android:id="@+id/go_file_more_header"
 			android:layout_width="wrap_content"
@@ -97,6 +102,13 @@
 			android:text="@string/go_file_more"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textStyle="bold" />
+
+		<View
+			android:layout_width="fill_parent"
+			android:layout_height="2dp"
+			android:background="@color/holor_blue_light"
+			android:visibility="visible" />
+
 		<TableRow
 			android:id="@+id/go_file_size"
 			android:layout_width="wrap_content"
@@ -159,7 +171,8 @@
 	<LinearLayout
 		android:id="@+id/go_image_thumbs"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="fill_parent"
+		android:layout_weight="1"
 		android:orientation="vertical" >
 		<TextView
 			android:id="@+id/go_files_header"
@@ -168,33 +181,42 @@
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textStyle="bold"
 			android:text="@string/go_files" />
-
+		<View
+			android:layout_width="fill_parent"
+			android:layout_height="2dp"
+			android:background="@color/holor_blue_light"
+			android:visibility="visible" />
 		<GridView
 			android:id="@+id/go_thumb_grid"
 			android:layout_width="match_parent"
-			android:layout_height="150dp"
+			android:layout_height="fill_parent"
 			android:layout_gravity="center_horizontal"
+			android:paddingTop="@dimen/activity_vertical_margin"
+			android:paddingBottom="@dimen/activity_vertical_margin"
 			android:gravity="top|center_horizontal"
-			android:horizontalSpacing="1dp"
-			android:scrollbars="horizontal"
-			android:verticalSpacing="1dp" >
-
+			android:numColumns="5"
+			android:scrollbars="horizontal" >
 		</GridView>
 	</LinearLayout>
+
+	<View
+		android:id="@+id/go_blank"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_weight="1" />
 
 	<LinearLayout
 		android:id="@+id/go_dest_bar"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content" >
-
 		<TextView
-			android:id="@+id/textView1"
+			android:id="@+id/go_dest_title"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_gravity="right|center_vertical"
-			android:textStyle="bold"
-			android:text="@string/go_dest_dir" />
+			android:text="@string/go_dest_dir"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:textStyle="bold" />
 		<Spinner
 			android:id="@+id/go_albums_spinner"
 			android:layout_width="fill_parent"
@@ -204,10 +226,9 @@
 
 	<LinearLayout
 		android:id="@+id/go_action_bar"
+		android:paddingTop="@dimen/activity_vertical_margin"
 		android:layout_width="match_parent"
-		android:layout_height="fill_parent"
-		android:layout_weight="1" >
-
+		android:layout_height="wrap_content" >
 		<Button
 			android:id="@+id/go_action_cancel"
 			android:layout_width="0dp"
@@ -223,5 +244,6 @@
 			android:layout_weight="1"
 			android:text="@string/go_action_move" />
 	</LinearLayout>
+
 </LinearLayout>
 <!-- vim: set ts=4 sw=4: -->

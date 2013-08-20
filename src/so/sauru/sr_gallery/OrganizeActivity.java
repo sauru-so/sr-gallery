@@ -282,6 +282,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				rV.findViewById(R.id.go_image_thumbs).setVisibility(View.GONE);
 			} else if (uriList.size() > 0) {
 				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
+				rV.findViewById(R.id.go_blank).setVisibility(View.GONE);
 				GridView gv = (GridView) rV.findViewById(R.id.go_thumb_grid);
 				gv.setAdapter(new ImageAdapter(this.getActivity()));
 			} else {
