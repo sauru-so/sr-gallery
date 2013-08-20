@@ -14,22 +14,22 @@ import so.sauru.UriUtils;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore.Images;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.text.Editable;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +38,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -124,6 +127,12 @@ public class OrganizeActivity extends FragmentActivity implements
 				Uri contentUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
 				Log.d(GALLORG, "SEND URI:" + contentUri.toString());
 				uriList.add(contentUri);
+			}
+		} else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
+			if (extras != null) {
+				ArrayList<Uri> uriArray = extras
+						.getParcelableArrayList(Intent.EXTRA_STREAM);
+				uriList.addAll(uriArray);
 			}
 		}
 	}
@@ -272,16 +281,19 @@ public class OrganizeActivity extends FragmentActivity implements
 				etHash.setText("Not implemented yet");
 				rV.findViewById(R.id.go_image_thumbs).setVisibility(View.GONE);
 			} else if (uriList.size() > 0) {
-				etUri.setText("Bulk");
-				etPath.setText("Bulk");
-				etName.setText("Bulk");
-			} else {
-				etUri.setText("Empty");
-				etPath.setText("Empty");
-				etName.setText("Empty");
 				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
+				GridView gv = (GridView) rV.findViewById(R.id.go_thumb_grid);
+				gv.setAdapter(new ImageAdapter(this.getActivity()));
+			} else {
+				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
+				rV.findViewById(R.id.go_image_thumbs).setVisibility(View.GONE);
+				rV.findViewById(R.id.go_dest_bar).setVisibility(View.GONE);
+				rV.findViewById(R.id.go_action_bar).setVisibility(View.GONE);
+				Toast.makeText(getActivity(),
+						"Error! no media.", Toast.LENGTH_LONG).show();
 				Log.e(GALLORG, "Error! empty URI list: " + uriList.toString());
 				// TODO: more error handling here.
+				return rV;
 			}
 
 			/** get directory from... **/
@@ -335,6 +347,48 @@ public class OrganizeActivity extends FragmentActivity implements
 			rV.findViewById(R.id.go_action_cancel)
 				.setOnClickListener(new OnBtnClickListener());
 			return rV;
+		}
+
+		public class ImageAdapter extends BaseAdapter {
+			public ImageAdapter(Context c) {
+			}
+
+			@Override
+			public int getCount() {
+				return uriList.size();
+			}
+
+			@Override
+			public Object getItem(int arg0) {
+				return null;
+			}
+
+			@Override
+			public long getItemId(int arg0) {
+				return 0;
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				ImageView iv;
+				if (convertView == null) {
+					iv = new ImageView(getActivity());
+					iv.setScaleType(ImageView.ScaleType.FIT_XY);
+					iv.setLayoutParams(new GridView.LayoutParams(125,125));
+					iv.setPadding(8, 8, 8, 8);
+				} else {
+					iv = (ImageView) convertView;
+				}
+				try {
+					Bitmap bmp = Images.Media.getBitmap(getActivity()
+							.getContentResolver(), uriList.get(position));
+					bmp = Bitmap.createScaledBitmap(bmp, 125, 125, false);
+					iv.setImageBitmap(bmp);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return iv;
+			}
 		}
 
 		public class OnBtnClickListener implements View.OnClickListener {
