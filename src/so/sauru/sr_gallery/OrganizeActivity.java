@@ -323,8 +323,10 @@ public class OrganizeActivity extends FragmentActivity implements
 
 			spAlbums = (Spinner) rV.findViewById(R.id.go_albums_spinner);
 			aaAlbums = new ArrayAdapter <CharSequence> (this
-					.getActivity(),
-					android.R.layout.simple_spinner_dropdown_item, dirStrList);
+					.getActivity(), android.R.layout
+					.simple_spinner_item, dirStrList);
+			aaAlbums.setDropDownViewResource(android.R.layout
+					.simple_spinner_dropdown_item);
 			spAlbums.setAdapter(aaAlbums);
 			spAlbums.setOnItemSelectedListener(new OnAlbumSelectedListener());
 
