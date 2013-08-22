@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import so.sauru.UriUtils;
+import so.sauru.sr_gallery.R.dimen;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
@@ -19,6 +20,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,6 +32,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -284,7 +287,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
 				rV.findViewById(R.id.go_blank).setVisibility(View.GONE);
 				GridView gv = (GridView) rV.findViewById(R.id.go_thumb_grid);
-				gv.setAdapter(new ImageAdapter(this.getActivity()));
+				gv.setAdapter(new ImageAdapter());
 			} else {
 				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
 				rV.findViewById(R.id.go_image_thumbs).setVisibility(View.GONE);
@@ -351,7 +354,12 @@ public class OrganizeActivity extends FragmentActivity implements
 		}
 
 		public class ImageAdapter extends BaseAdapter {
-			public ImageAdapter(Context c) {
+			int width;
+			public ImageAdapter() {
+				int m = getActivity().getResources()
+						.getDimensionPixelSize(R.dimen.activity_horizontal_margin);
+				Display d = getActivity().getWindowManager().getDefaultDisplay();
+				width = (d.getWidth() - m * 2) / 6;
 			}
 
 			@Override
@@ -375,16 +383,17 @@ public class OrganizeActivity extends FragmentActivity implements
 				if (convertView == null) {
 					iv = new ImageView(getActivity());
 					iv.setScaleType(ImageView.ScaleType.FIT_XY);
-					iv.setLayoutParams(new GridView.LayoutParams(125,125));
-					iv.setPadding(8, 8, 8, 8);
+					iv.setLayoutParams(new GridView.LayoutParams(width, width));
+					iv.setPadding(0,0,0,0);
 				} else {
 					iv = (ImageView) convertView;
 				}
 				try {
 					Bitmap bmp = Images.Media.getBitmap(getActivity()
 							.getContentResolver(), uriList.get(position));
-					bmp = Bitmap.createScaledBitmap(bmp, 125, 125, false);
+					bmp = Bitmap.createScaledBitmap(bmp, width, width, false);
 					iv.setImageBitmap(bmp);
+					iv.getDrawable().setCallback(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -398,6 +407,11 @@ public class OrganizeActivity extends FragmentActivity implements
 				switch (v.getId()) {
 				case R.id.go_action_move:
 					Toast.makeText(getActivity(), "MOVE", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), gallorg_dest.toString(),
+							Toast.LENGTH_SHORT).show();
+					if (!gallorg_dest.exists()) {
+						gallorg_dest.mkdirs();
+					}
 					break;
 				case R.id.go_action_cancel:
 					Toast.makeText(getActivity(), "CANCEL", Toast.LENGTH_SHORT).show();
