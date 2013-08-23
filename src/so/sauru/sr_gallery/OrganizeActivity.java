@@ -379,25 +379,25 @@ public class OrganizeActivity extends FragmentActivity implements
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				ImageView iv;
+				//ImageView iv;
 				if (convertView == null) {
-					iv = new ImageView(getActivity());
-					iv.setScaleType(ImageView.ScaleType.FIT_XY);
-					iv.setLayoutParams(new GridView.LayoutParams(width, width));
-					iv.setPadding(0,0,0,0);
-				} else {
-					iv = (ImageView) convertView;
+					convertView = new ImageView(getActivity());
+					((ImageView) convertView).setScaleType(ImageView.ScaleType.FIT_XY);
+					convertView.setLayoutParams(new GridView.LayoutParams(width, width));
+					convertView.setPadding(0,0,0,0);
+				//} else {
+				//	iv = (ImageView) convertView;
 				}
 				try {
 					Bitmap bmp = Images.Media.getBitmap(getActivity()
 							.getContentResolver(), uriList.get(position));
 					bmp = Bitmap.createScaledBitmap(bmp, width, width, false);
-					iv.setImageBitmap(bmp);
-					iv.getDrawable().setCallback(null);
+					((ImageView) convertView).setImageBitmap(bmp);
+					((ImageView) convertView).getDrawable().setCallback(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				return iv;
+				return convertView;
 			}
 		}
 
