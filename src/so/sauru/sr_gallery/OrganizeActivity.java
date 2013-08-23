@@ -388,7 +388,7 @@ public class OrganizeActivity extends FragmentActivity implements
 					convertView = new ImageView(activity);
 					holder = new ViewHolder();
 					holder.iv = (ImageView) convertView;
-					holder.iv.setScaleType(ImageView.ScaleType.FIT_XY);
+					holder.iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
 					holder.iv.setLayoutParams(new GridView
 							.LayoutParams(width, width));
 					holder.iv.setPadding(0,0,0,0);
