@@ -9,23 +9,20 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 
+import so.sauru.ImageUtils;
 import so.sauru.UriUtils;
-import so.sauru.sr_gallery.R.dimen;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore.Images;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -353,13 +350,20 @@ public class OrganizeActivity extends FragmentActivity implements
 			return rV;
 		}
 
+		public static class ViewHolder {
+			public ImageView iv;
+		}
+
 		public class ImageAdapter extends BaseAdapter {
 			int width;
+			FragmentActivity activity;
+
 			public ImageAdapter() {
-				int m = getActivity().getResources()
+				activity = getActivity();
+				int hori_m = activity.getResources()
 						.getDimensionPixelSize(R.dimen.activity_horizontal_margin);
-				Display d = getActivity().getWindowManager().getDefaultDisplay();
-				width = (d.getWidth() - m * 2) / 6;
+				Display d = activity.getWindowManager().getDefaultDisplay();
+				width = (d.getWidth() - hori_m * 2) / 5;
 			}
 
 			@Override
@@ -379,21 +383,24 @@ public class OrganizeActivity extends FragmentActivity implements
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				//ImageView iv;
+				ViewHolder holder = null;
 				if (convertView == null) {
-					convertView = new ImageView(getActivity());
-					((ImageView) convertView).setScaleType(ImageView.ScaleType.FIT_XY);
-					convertView.setLayoutParams(new GridView.LayoutParams(width, width));
-					convertView.setPadding(0,0,0,0);
-				//} else {
-				//	iv = (ImageView) convertView;
+					convertView = new ImageView(activity);
+					holder = new ViewHolder();
+					holder.iv = (ImageView) convertView;
+					holder.iv.setScaleType(ImageView.ScaleType.FIT_XY);
+					holder.iv.setLayoutParams(new GridView
+							.LayoutParams(width, width));
+					holder.iv.setPadding(0,0,0,0);
+					convertView.setTag(holder);
+				} else {
+					holder = (ViewHolder) convertView.getTag();
 				}
 				try {
-					Bitmap bmp = Images.Media.getBitmap(getActivity()
-							.getContentResolver(), uriList.get(position));
-					bmp = Bitmap.createScaledBitmap(bmp, width, width, false);
-					((ImageView) convertView).setImageBitmap(bmp);
-					((ImageView) convertView).getDrawable().setCallback(null);
+					Bitmap bmp = ImageUtils.createThumbnail(uriList
+							.get(position), width, width, activity);
+					holder.iv.setImageBitmap(bmp);
+					//holder.iv.getDrawable().setCallback(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
