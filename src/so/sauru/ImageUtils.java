@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.util.Log;
 
 public class ImageUtils {
 	/** Get Bitmap's Width **/
@@ -32,23 +33,6 @@ public class ImageUtils {
 		}
 	}
 
-	/** Create Thumbnail of Image File **/
-	public static Bitmap createThumbnail(String filename, int w, int h) {
-		BitmapFactory.Options options = new BitmapFactory.Options();
-		int img_w = getWidth(filename);
-		int img_h = getHeight(filename);
-		if (img_w > (4 * w) || img_h > (4 * h)) {
-			options.inSampleSize = 4;
-		}
-		if (img_w/img_h > w/h) {
-			w = h * img_w/img_h;
-		} else {
-			h = w * img_h/img_w;
-		}
-		Bitmap src = BitmapFactory.decodeFile(filename, options);
-		return Bitmap.createScaledBitmap(src, w, h, true);
-	}
-
 	/** Rotate Bitmap **/
 	public static Bitmap rotate(Bitmap b, int degrees) {
 		if ( degrees != 0 && b != null ) {
@@ -68,12 +52,36 @@ public class ImageUtils {
 		return b;
 	}
 
-	/** Create Thumnail of Image URI **/
-	public static Bitmap createThumbnail(Uri uri, int w, int h, Activity act) {
-		String filepath = UriUtils.getFileFromUri(uri, act).getAbsolutePath();
-		Bitmap bmp = createThumbnail(filepath, w, h);
+	/** Create Thumbnail of Image File **/
+	public static Bitmap createThumbnail(String filename, int w, int h) {
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		int img_w = getWidth(filename);
+		int img_h = getHeight(filename);
+
+		if (((float) img_w / (float) img_h) > ((float) w/ (float) h)) {
+			w = (int) Math.round((float) h * (float) img_w / (float) img_h);
+		} else {
+			h = (int) Math.round((float) w * (float) img_h / (float) img_w);
+		}
+
+		if (img_w > (32 * w)) {
+			options.inSampleSize = 16;
+		} else if (img_w > (16 * w)) {
+			options.inSampleSize = 16;
+		} else if (img_w > (8 * w)) {
+			options.inSampleSize = 8;
+		} else if (img_w > (4 * w)) {
+			options.inSampleSize = 4;
+		} else if (img_w > (2 * w)) {
+			options.inSampleSize = 2;
+		}
+		Log.d("ImageUtils", "filename:" + filename + " sample:" + options.inSampleSize
+				+ " dim:" + img_w + "x" + img_h + " " + w + "x" + h);
+
+		Bitmap src = BitmapFactory.decodeFile(filename, options);
+		Bitmap bmp = Bitmap.createScaledBitmap(src, w, h, true);
 		try {
-			ExifInterface exif = new ExifInterface(filepath);
+			ExifInterface exif = new ExifInterface(filename);
 			int orientation = Integer.parseInt(exif
 					.getAttribute(ExifInterface.TAG_ORIENTATION));
 			switch(orientation) {
@@ -88,7 +96,16 @@ public class ImageUtils {
 				break;
 			}
 		} catch (Exception e) {
+			Log.d("ImageUtils", "exif error for " + filename);
+			e.printStackTrace();
 		}
+		return bmp;
+	}
+
+	/** Create Thumnail of Image URI (just uri2path and call other method) **/
+	public static Bitmap createThumbnail(Uri uri, int w, int h, Activity act) {
+		String filepath = UriUtils.getFileFromUri(uri, act).getAbsolutePath();
+		Bitmap bmp = createThumbnail(filepath, w, h);
 		return bmp;
 	}
 }

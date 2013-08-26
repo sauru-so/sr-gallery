@@ -6,15 +6,16 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 public class UriUtils {
 	public static File getFileFromUri(Uri uri, Activity activity) {
-		String filePath = null;
+		String path = uri.getPath();
 		String scheme = uri.getScheme();
-		filePath = uri.getPath();
-		if (filePath != null && scheme != null
+
+		if (path != null && scheme != null
 				&& scheme.equals("file")) {
-			return new File(filePath);
+			return new File(path);
 		}
 
 		String[] projection = {
@@ -23,10 +24,13 @@ public class UriUtils {
 		Cursor c = activity.getContentResolver().query(uri,
 				projection, null, null, null);
 		if (c != null && c.moveToFirst()) {
-			filePath = c.getString(0);
-		}
-		if (filePath != null) {
-			return new File(filePath);
+			path = c.getString(0);
+			if (path != null) {
+				return new File(path);
+			}
+			c.close();
+		} else {
+			Log.e("UriUtils", "uri query failed for: " + uri.toString());
 		}
 		return null;
 	}

@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -66,7 +67,7 @@ public class OrganizeActivity extends FragmentActivity implements
 
 	/* my variables */
 	static ArrayList<Uri> uriList = new ArrayList<Uri> ();
-	ArrayList<File> fileList = new ArrayList<File> ();
+	static ArrayList<File> fileList = new ArrayList<File> ();
 	static final String GALLORG = "GallOrg";
 	static String new_album = new String();
 	static File gallorg_root = null;
@@ -115,17 +116,17 @@ public class OrganizeActivity extends FragmentActivity implements
 		}
 
 		/* real works (added by me) started here... */
-		getUriList();
+		generateFileList();
 	}
 
-	private void getUriList() {
+	private void generateFileList() {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
+
 		uriList.clear();
 		if (Intent.ACTION_SEND.equals(intent.getAction())) {
 			if (extras != null) {
 				Uri contentUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
-				Log.d(GALLORG, "SEND URI:" + contentUri.toString());
 				uriList.add(contentUri);
 			}
 		} else if (Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
@@ -134,6 +135,12 @@ public class OrganizeActivity extends FragmentActivity implements
 						.getParcelableArrayList(Intent.EXTRA_STREAM);
 				uriList.addAll(uriArray);
 			}
+		}
+
+		fileList.clear();
+		Iterator <Uri> e = uriList.iterator();
+		while (e.hasNext()) {
+			fileList.add(UriUtils.getFileFromUri(e.next(), this));
 		}
 	}
 
@@ -257,18 +264,21 @@ public class OrganizeActivity extends FragmentActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rV = inflater.inflate(R.layout.fragment_gallorg_file,
-					container, false);
-			EditText etUri = (EditText) rV.findViewById(R.id.go_file_uri_value);
-			EditText etPath = (EditText) rV.findViewById(R.id.go_file_path_value);
-			EditText etName = (EditText) rV.findViewById(R.id.go_file_name_value);
-			EditText etSize = (EditText) rV.findViewById(R.id.go_file_size_value);
-			EditText etDate = (EditText) rV.findViewById(R.id.go_file_date_value);
-			EditText etHash = (EditText) rV.findViewById(R.id.go_file_hash_value);
 
+			View rV = null;
 			/** get file information and show it **/
 			Log.d(GALLORG, uriList.toString());
+			Log.d(GALLORG, fileList.toString());
 			if (uriList.size() == 1) {
+				rV = inflater.inflate(R.layout.fragment_gallorg_file,
+						container, false);
+				EditText etUri = (EditText) rV.findViewById(R.id.go_file_uri_value);
+				EditText etPath = (EditText) rV.findViewById(R.id.go_file_path_value);
+				EditText etName = (EditText) rV.findViewById(R.id.go_file_name_value);
+				EditText etSize = (EditText) rV.findViewById(R.id.go_file_size_value);
+				EditText etDate = (EditText) rV.findViewById(R.id.go_file_date_value);
+				EditText etHash = (EditText) rV.findViewById(R.id.go_file_hash_value);
+
 				Uri tU = uriList.get(0);
 				File tF = UriUtils.getFileFromUri(tU, this.getActivity());
 				SimpleDateFormat dF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
@@ -279,15 +289,18 @@ public class OrganizeActivity extends FragmentActivity implements
 				etSize.setText(tF.length()/1024 + "KB");
 				etDate.setText(dF.format(new Date(tF.lastModified())));
 				etHash.setText("Not implemented yet");
-				rV.findViewById(R.id.go_image_thumbs).setVisibility(View.GONE);
-			} else if (uriList.size() > 0) {
-				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
-				rV.findViewById(R.id.go_blank).setVisibility(View.GONE);
+				ImageView ivPrev = (ImageView) rV.findViewById(R.id.go_image_preview);
+				ivPrev.setImageBitmap(ImageUtils
+						.createThumbnail(tF.getAbsolutePath(), 500, 240));
+			} else if (uriList.size() > 1) {
+				rV = inflater.inflate(R.layout.fragment_gallorg_multi,
+						container, false);
 				GridView gv = (GridView) rV.findViewById(R.id.go_thumb_grid);
 				gv.setAdapter(new ImageAdapter());
 			} else {
+				rV = inflater.inflate(R.layout.fragment_gallorg_file,
+						container, false);
 				rV.findViewById(R.id.go_single_image).setVisibility(View.GONE);
-				rV.findViewById(R.id.go_image_thumbs).setVisibility(View.GONE);
 				rV.findViewById(R.id.go_dest_bar).setVisibility(View.GONE);
 				rV.findViewById(R.id.go_action_bar).setVisibility(View.GONE);
 				Toast.makeText(getActivity(),
@@ -391,20 +404,49 @@ public class OrganizeActivity extends FragmentActivity implements
 					holder.iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
 					holder.iv.setLayoutParams(new GridView
 							.LayoutParams(width, width));
-					holder.iv.setPadding(0,0,0,0);
 					convertView.setTag(holder);
 				} else {
 					holder = (ViewHolder) convertView.getTag();
 				}
+				holder.iv.setImageResource(R.drawable.ic_launcher);
+				new LazyLoadImage(holder, position, width).execute();
+
+				return convertView;
+			}
+		}
+
+		public class LazyLoadImage extends AsyncTask<Void, Void, Bitmap> {
+			private ViewHolder holder = null;
+			private int position = 0;
+			private int width = 0;
+
+			public LazyLoadImage(ViewHolder holder, int position, int w) {
+				this.holder = holder;
+				this.position = position;
+				this.width = w;
+			}
+
+			@Override
+			protected Bitmap doInBackground(Void... params) {
 				try {
+					/*
 					Bitmap bmp = ImageUtils.createThumbnail(uriList
-							.get(position), width, width, activity);
-					holder.iv.setImageBitmap(bmp);
-					//holder.iv.getDrawable().setCallback(null);
+							.get(position),
+							width, width, activity);
+					*/
+					Bitmap bmp = ImageUtils.createThumbnail(fileList
+							.get(position).toString(), width, width);
+					return bmp;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				return convertView;
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Bitmap bmp) {
+				holder.iv.setImageBitmap(bmp);
+				holder.iv.getDrawable().setCallback(null);
 			}
 		}
 

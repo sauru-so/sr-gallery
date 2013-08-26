@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:orientation="vertical"
 	android:paddingBottom="@dimen/activity_vertical_margin"
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
-	android:paddingTop="@dimen/activity_vertical_margin"
-	android:orientation="vertical">
+	android:paddingTop="@dimen/activity_vertical_margin" >
 
 	<TableLayout
 		android:id="@+id/go_single_image"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="0dp"
+		android:layout_weight="1"
 		android:shrinkColumns="1"
 		android:stretchColumns="1" >
 
@@ -22,6 +24,7 @@
 			android:text="@string/go_file_info"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textStyle="bold" />
+
 		<View
 			android:layout_width="fill_parent"
 			android:layout_height="2dp"
@@ -32,6 +35,7 @@
 			android:id="@+id/go_file_uri"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" >
+
 			<TextView
 				android:id="@+id/go_file_uri_label"
 				android:layout_width="wrap_content"
@@ -41,19 +45,23 @@
 				android:maxLines="1"
 				android:scrollHorizontally="false"
 				android:text="@string/go_file_uri" />
+
 			<EditText
 				android:id="@+id/go_file_uri_value"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:inputType="none"
 				android:singleLine="true"
-				android:textIsSelectable="true" />
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textIsSelectable="true"
+				tools:ignore="TextFields" />
 		</TableRow>
+
 		<TableRow
 			android:id="@+id/go_file_path"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" >
+
 			<TextView
 				android:id="@+id/go_file_path_label"
 				android:layout_width="wrap_content"
@@ -63,19 +71,22 @@
 				android:maxLines="1"
 				android:scrollHorizontally="false"
 				android:text="@string/go_file_path" />
+
 			<EditText
 				android:id="@+id/go_file_path_value"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:inputType="none"
 				android:singleLine="true"
+				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:textIsSelectable="true" />
 		</TableRow>
+
 		<TableRow
 			android:id="@+id/go_file_name"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" >
+
 			<TextView
 				android:id="@+id/go_file_name_label"
 				android:layout_width="wrap_content"
@@ -85,13 +96,14 @@
 				android:maxLines="1"
 				android:scrollHorizontally="false"
 				android:text="@string/go_file_name" />
+
 			<EditText
 				android:id="@+id/go_file_name_value"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:inputType="none"
 				android:singleLine="true"
+				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:textIsSelectable="true" />
 		</TableRow>
 
@@ -113,104 +125,87 @@
 			android:id="@+id/go_file_size"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" >
+
 			<TextView
 				android:id="@+id/go_file_size_label"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="right|center_vertical"
 				android:text="@string/go_file_size" />
+
 			<EditText
 				android:id="@+id/go_file_size_value"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:inputType="none"
 				android:singleLine="true"
+				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:textIsSelectable="true"
-				android:inputType="none" />
+				tools:ignore="TextFields" />
+
 		</TableRow>
+
 		<TableRow
 			android:id="@+id/go_file_date"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" >
+
 			<TextView
 				android:id="@+id/go_file_date_label"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="right|center_vertical"
 				android:text="@string/go_file_date" />
+
 			<EditText
 				android:id="@+id/go_file_date_value"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:inputType="none"
 				android:singleLine="true"
+				android:textAppearance="?android:attr/textAppearanceSmall"
 				android:textIsSelectable="true"
-				android:inputType="none" />
+				tools:ignore="TextFields" />
+
 		</TableRow>
+
 		<TableRow
 			android:id="@+id/go_file_chksum"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content" >
+
 			<TextView
 				android:id="@+id/go_file_hash_label"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="right|center_vertical"
 				android:text="@string/go_file_hash" />
+
 			<EditText
 				android:id="@+id/go_file_hash_value"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:inputType="none"
 				android:singleLine="true"
-				android:textIsSelectable="true"
-				android:inputType="none" />
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textIsSelectable="true" />
 		</TableRow>
+
+		<ImageView
+			android:id="@+id/go_image_preview"
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			android:layout_weight="5"
+			android:src="@drawable/sample"
+			tools:ignore="ContentDescription" />
+
 	</TableLayout>
 
 	<LinearLayout
-		android:id="@+id/go_image_thumbs"
-		android:layout_width="match_parent"
-		android:layout_height="fill_parent"
-		android:layout_weight="1"
-		android:orientation="vertical" >
-		<TextView
-			android:id="@+id/go_files_header"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:textStyle="bold"
-			android:text="@string/go_files" />
-		<View
-			android:layout_width="fill_parent"
-			android:layout_height="2dp"
-			android:background="@color/holor_blue_light"
-			android:visibility="visible" />
-
-		<GridView
-			android:id="@+id/go_thumb_grid"
-			android:layout_width="match_parent"
-			android:layout_height="fill_parent"
-			android:layout_gravity="center_horizontal"
-			android:gravity="top|center_horizontal"
-			android:numColumns="5"
-			android:paddingBottom="@dimen/activity_vertical_margin"
-			android:paddingTop="@dimen/activity_vertical_margin"
-			android:scrollbars="horizontal" >
-
-		</GridView>
-	</LinearLayout>
-
-	<View
-		android:id="@+id/go_blank"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_weight="1" />
-
-	<LinearLayout
 		android:id="@+id/go_dest_bar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content" >
+
 		<TextView
 			android:id="@+id/go_dest_title"
 			android:layout_width="wrap_content"
@@ -219,33 +214,36 @@
 			android:text="@string/go_dest_dir"
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:textStyle="bold" />
+
 		<Spinner
 			android:id="@+id/go_albums_spinner"
-			android:layout_width="fill_parent"
+			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1" />
 	</LinearLayout>
 
 	<LinearLayout
+		style="?android:attr/buttonBarStyle"
 		android:id="@+id/go_action_bar"
-		android:paddingTop="@dimen/activity_vertical_margin"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content" >
+		android:layout_height="wrap_content"
+		android:paddingTop="@dimen/widget_vertical_margin" >
+
 		<Button
+			style="?android:attr/buttonBarButtonStyle"
 			android:id="@+id/go_action_cancel"
-			android:layout_width="0dp"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_gravity="bottom"
 			android:layout_weight="1"
 			android:text="@string/go_action_cancel" />
+
 		<Button
+			style="?android:attr/buttonBarButtonStyle"
 			android:id="@+id/go_action_move"
-			android:layout_width="0dp"
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_gravity="bottom"
 			android:layout_weight="1"
 			android:text="@string/go_action_move" />
 	</LinearLayout>
 
-</LinearLayout>
-<!-- vim: set ts=4 sw=4: -->
+</LinearLayout><!-- vim: set ts=4 sw=4: -->
