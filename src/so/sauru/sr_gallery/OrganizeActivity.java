@@ -142,6 +142,7 @@ public class OrganizeActivity extends FragmentActivity implements
 		while (e.hasNext()) {
 			fileList.add(UriUtils.getFileFromUri(e.next(), this));
 		}
+		Collections.sort(fileList);
 	}
 
 	@Override
