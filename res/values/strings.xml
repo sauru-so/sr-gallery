@@ -20,9 +20,11 @@
     <string name="go_file_date">Date</string>
     <string name="go_dest_dir">Move to </string>
     <string name="go_list_camera">&lt;Camera&gt;</string>
-    <string name="go_list_new">New</string>
+    <string name="go_list_new">&lt;New&gt;</string>
     <string name="go_newalbum_title">New Album</string>
     <string name="go_newalbum_desc">Enter new album name.</string>
     <string name="go_action_cancel">Cancel</string>
     <string name="go_action_move">Move</string>
+    <string name="go_move_all_done">All Done!</string>
+    <string name="go_move_partially_done">Partially Done!</string>
 </resources>

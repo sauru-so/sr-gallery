@@ -60,6 +60,14 @@
 			android:layout_weight="1" />
 	</LinearLayout>
 
+	<ProgressBar
+		android:id="@+id/go_progressbar"
+		style="?android:attr/progressBarStyleHorizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:max="100"
+		android:visibility="gone" />
+
 	<LinearLayout
 		style="?android:attr/buttonBarStyle"
 		android:id="@+id/go_action_bar"

@@ -1,6 +1,8 @@
 package so.sauru.sr_gallery;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +25,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -43,6 +46,7 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,6 +73,7 @@ public class OrganizeActivity extends FragmentActivity implements
 	static ArrayList<Uri> uriList = new ArrayList<Uri> ();
 	static ArrayList<File> fileList = new ArrayList<File> ();
 	static final String GALLORG = "GallOrg";
+	static final int COPY_BUFFER_SIZE = 32 * 1024;
 	static String new_album = new String();
 	static File gallorg_root = null;
 	static File gallorg_dest = null;
@@ -258,6 +263,14 @@ public class OrganizeActivity extends FragmentActivity implements
 	}
 
 	public static class FileSectionFragment extends Fragment {
+		View rV = null;
+		GridView gv = null;
+		Handler handler = new Handler();
+		ProgressBar pb = null;
+		int total = 0;
+		int count = 0;
+		boolean movingStatus = true;
+
 		public FileSectionFragment() {
 		}
 
@@ -265,8 +278,6 @@ public class OrganizeActivity extends FragmentActivity implements
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-
-			View rV = null;
 			/** get file information and show it **/
 			Log.d(GALLORG, uriList.toString());
 			Log.d(GALLORG, fileList.toString());
@@ -290,13 +301,15 @@ public class OrganizeActivity extends FragmentActivity implements
 				etSize.setText(tF.length()/1024 + "KB");
 				etDate.setText(dF.format(new Date(tF.lastModified())));
 				etHash.setText("Not implemented yet");
-				ImageView ivPrev = (ImageView) rV.findViewById(R.id.go_image_preview);
+
+				ImageView ivPrev = (ImageView) rV
+						.findViewById(R.id.go_image_preview);
 				ivPrev.setImageBitmap(ImageUtils
 						.createThumbnail(tF.getAbsolutePath(), 500, 240));
 			} else if (uriList.size() > 1) {
 				rV = inflater.inflate(R.layout.fragment_gallorg_multi,
 						container, false);
-				GridView gv = (GridView) rV.findViewById(R.id.go_thumb_grid);
+				gv = (GridView) rV.findViewById(R.id.go_thumb_grid);
 				gv.setAdapter(new ImageAdapter());
 			} else {
 				rV = inflater.inflate(R.layout.fragment_gallorg_file,
@@ -305,9 +318,8 @@ public class OrganizeActivity extends FragmentActivity implements
 				rV.findViewById(R.id.go_dest_bar).setVisibility(View.GONE);
 				rV.findViewById(R.id.go_action_bar).setVisibility(View.GONE);
 				Toast.makeText(getActivity(),
-						"Error! no media.", Toast.LENGTH_LONG).show();
-				Log.e(GALLORG, "Error! empty URI list: " + uriList.toString());
-				// TODO: more error handling here.
+						"Oops! No Media.", Toast.LENGTH_LONG).show();
+				Log.e(GALLORG, "Oops! empty URI list: " + uriList.toString());
 				return rV;
 			}
 
@@ -324,17 +336,18 @@ public class OrganizeActivity extends FragmentActivity implements
 			} else {
 				gallorg_root = new File(pref_gallery_root);
 			}
-			Log.d(GALLORG, gallorg_root.getPath());
+			Log.i(GALLORG, gallorg_root.getPath());
 
 			/** generate album list from gallery root. **/
 			ArrayList<CharSequence> dirStrList = new ArrayList<CharSequence> ();
 			dirStrList.add(getString(R.string.go_list_camera)); /* to restore to Camera */
+			dirStrList.add(getString(R.string.go_list_new)); /* for new folder creation. */
 			if (gallorg_root.exists() && gallorg_root.isDirectory()) {
 				ArrayList<File> dirList = new ArrayList<File> (Arrays.
 						asList(gallorg_root.listFiles()));
 				Collections.sort(dirList);
 				Iterator<File> e = dirList.iterator();
-				/* now just support 1-level subdirectory. */
+				/* TODO now just support 1-level sub-directory. */
 				while (e.hasNext()) {
 					File t = (File) e.next();
 					if (t.isDirectory()) {
@@ -345,7 +358,6 @@ public class OrganizeActivity extends FragmentActivity implements
 				Toast.makeText(getActivity(), "gallorg_root does not exist or...",
 						Toast.LENGTH_SHORT).show();
 			}
-			dirStrList.add(getString(R.string.go_list_new)); /* for new folder creation. */
 			Log.d(GALLORG, dirStrList.toString());
 
 			spAlbums = (Spinner) rV.findViewById(R.id.go_albums_spinner);
@@ -382,7 +394,7 @@ public class OrganizeActivity extends FragmentActivity implements
 
 			@Override
 			public int getCount() {
-				return uriList.size();
+				return fileList.size();
 			}
 
 			@Override
@@ -409,7 +421,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				} else {
 					holder = (ViewHolder) convertView.getTag();
 				}
-				holder.iv.setImageResource(R.drawable.ic_launcher);
+				holder.iv.setImageResource(R.drawable.blank);
 				new LazyLoadImage(holder, position, width).execute();
 
 				return convertView;
@@ -430,11 +442,6 @@ public class OrganizeActivity extends FragmentActivity implements
 			@Override
 			protected Bitmap doInBackground(Void... params) {
 				try {
-					/*
-					Bitmap bmp = ImageUtils.createThumbnail(uriList
-							.get(position),
-							width, width, activity);
-					*/
 					Bitmap bmp = ImageUtils.createThumbnail(fileList
 							.get(position).toString(), width, width);
 					return bmp;
@@ -456,11 +463,19 @@ public class OrganizeActivity extends FragmentActivity implements
 			public void onClick(View v) {
 				switch (v.getId()) {
 				case R.id.go_action_move:
-					Toast.makeText(getActivity(), "MOVE", Toast.LENGTH_SHORT).show();
-					Toast.makeText(getActivity(), gallorg_dest.toString(),
-							Toast.LENGTH_SHORT).show();
-					if (!gallorg_dest.exists()) {
-						gallorg_dest.mkdirs();
+					Log.d(GALLORG, "move to " + gallorg_dest.toString());
+					// exchange target selector with progress bar.
+					rV.findViewById(R.id.go_dest_bar).setVisibility(View.GONE);
+					pb = (ProgressBar) rV.findViewById(R.id.go_progressbar);
+					pb.setVisibility(View.VISIBLE);
+					if (makeDestDir(gallorg_dest)) {
+						moveFiles();
+					} else {
+						Toast.makeText(getActivity(), "Oops! cannot create album!",
+								Toast.LENGTH_SHORT).show();
+						// restore target selector.
+						pb.setVisibility(View.GONE);
+						rV.findViewById(R.id.go_dest_bar).setVisibility(View.VISIBLE);
 					}
 					break;
 				case R.id.go_action_cancel:
@@ -469,6 +484,122 @@ public class OrganizeActivity extends FragmentActivity implements
 				default:
 					Toast.makeText(getActivity(), "WHAT", Toast.LENGTH_SHORT).show();	
 				}
+			}
+
+			private boolean makeDestDir(File dir) {
+				if (dir.exists()) {
+					return true;
+				} else {
+					return gallorg_dest.mkdirs();
+				}
+			}
+
+			private boolean moveFile(File src, File dst) {
+				// work-around for checking if same partition.
+				Log.d(GALLORG, "src.getTotalSpace:" + src.getParentFile().getTotalSpace());
+				Log.d(GALLORG, "dst.getTotalSpace:" + dst.getParentFile().getTotalSpace());
+				if (src.getParentFile().getTotalSpace()
+						== dst.getParentFile().getTotalSpace()) {
+					Log.d(GALLORG, "moveFile: same partition...");
+					if (src.renameTo(dst)) {
+						return true;
+					} else {
+						return false;
+					}
+				} else {
+					Log.d(GALLORG, "moveFile: different partition...");
+					try {
+						FileInputStream input = new FileInputStream(src);
+						FileOutputStream output = new FileOutputStream(dst);
+						byte[] buffer = new byte[COPY_BUFFER_SIZE];
+
+						while (true) {
+							int bytes = input.read(buffer);
+							if (bytes <= 0) {
+								break;
+							}
+							output.write(buffer, 0, bytes);
+						}
+
+						output.close();
+						input.close();
+						dst.setLastModified(src.lastModified());
+					} catch (Exception e) {
+						e.printStackTrace();
+						return false;
+					}
+					return true;
+				}
+				/*
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				return false;
+				*/
+			}
+
+			private boolean moveFiles() {
+				total = fileList.size();
+				count = 0;
+
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						Iterator<File> e = fileList.iterator();
+						while (e.hasNext()) {
+							File file = (File) e.next();
+							File dest = new File(gallorg_dest.getAbsolutePath()
+									+ "/" + file.getName());
+							Log.d(GALLORG, "rename " + file.getAbsolutePath()
+									+ " to " + dest.getAbsolutePath());
+
+							// TODO check destination
+							if (moveFile(file, dest)) {
+								e.remove();
+							} else {
+								movingStatus = false;
+							}
+
+							count += 1;
+
+							handler.post(new Runnable() {
+								public void run() { // just progress per file.
+									pb.setProgress(100 * count / total);
+								}
+							});
+							if (count % 5 == 0) {
+								handler.post(new Runnable() {
+									public void run() { // update view per 5 files.
+										((ImageAdapter) gv.getAdapter())
+												.notifyDataSetChanged();
+									}
+								});
+							}
+						}
+						Log.i(GALLORG, "movingStatus: " + movingStatus);
+						handler.post(new Runnable() {
+							public void run() { // final update.
+								((ImageAdapter) gv.getAdapter())
+										.notifyDataSetChanged();
+								if (movingStatus) {
+									Toast.makeText(getActivity(), getResources()
+											.getString(R.string.go_move_all_done),
+											Toast.LENGTH_SHORT).show();
+								} else {
+									Toast.makeText(getActivity(), getResources()
+											.getString(R.string.go_move_partially_done),
+											Toast.LENGTH_SHORT).show();
+								}
+								pb.setVisibility(View.GONE);
+								rV.findViewById(R.id.go_dest_bar)
+										.setVisibility(View.VISIBLE);
+							}
+						});
+					}
+				}).start();
+				return true;
 			}
 		}
 
@@ -525,5 +656,4 @@ public class OrganizeActivity extends FragmentActivity implements
 		}
 	}
 }
-
 /* vim: set ts=2 sw=2: */
