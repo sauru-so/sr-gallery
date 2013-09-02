@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.util.Log;
 
 public class ImageUtils {
+	private static final String LOGTAG = "SR.ImageUtils";
+
 	/** Get Bitmap's Width **/
 	public static int getWidth(String filename) {
 		try {
@@ -76,7 +78,7 @@ public class ImageUtils {
 		} else if (img_w > (2 * w)) {
 			options.inSampleSize = 2;
 		}
-		Log.d("ImageUtils", "filename:" + filename + " sample:" + options.inSampleSize
+		Log.d(LOGTAG, "filename:" + filename + " sample:" + options.inSampleSize
 				+ " dim:" + img_w + "x" + img_h + " " + w + "x" + h);
 
 		Bitmap src = null;
@@ -100,8 +102,10 @@ public class ImageUtils {
 				bmp = rotate(bmp, 270);
 				break;
 			}
+		} catch (java.lang.NullPointerException e) {
+			Log.w(LOGTAG, "null pointer exception. deleted? -- " + filename);
 		} catch (Exception e) {
-			Log.d("ImageUtils", "exif error for " + filename);
+			Log.d(LOGTAG, "bitmap error for " + filename);
 			e.printStackTrace();
 		}
 		return bmp;

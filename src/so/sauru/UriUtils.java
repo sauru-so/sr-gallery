@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 public class UriUtils {
+	private static final String LOGTAG = "SR.UriUtils";
 	public static File getFileFromUri(Uri uri, Activity activity) {
 		String path = uri.getPath();
 		String scheme = uri.getScheme();
@@ -30,7 +31,7 @@ public class UriUtils {
 			}
 			c.close();
 		} else {
-			Log.e("UriUtils", "uri query failed for: " + uri.toString());
+			Log.e(LOGTAG, "uri query failed for: " + uri.toString());
 		}
 		return null;
 	}

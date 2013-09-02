@@ -29,7 +29,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.provider.MediaStore.Images.Media;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -75,7 +74,7 @@ public class OrganizeActivity extends FragmentActivity implements
 	/* my variables */
 	static ArrayList<Uri> uriList = new ArrayList<Uri> ();
 	static ArrayList<File> fileList = new ArrayList<File> ();
-	static final String GALLORG = "GallOrg";
+	private static final String LOGTAG = "SR.GallOrg";
 	static final int COPY_BUFFER_SIZE = 32 * 1024;
 	static String new_album = new String();
 	static File gallorg_root = null;
@@ -282,8 +281,8 @@ public class OrganizeActivity extends FragmentActivity implements
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
 			/** get file information and show it **/
-			Log.d(GALLORG, uriList.toString());
-			Log.d(GALLORG, fileList.toString());
+			Log.d(LOGTAG, uriList.toString());
+			Log.d(LOGTAG, fileList.toString());
 			if (uriList.size() == 1) {
 				rV = inflater.inflate(R.layout.fragment_gallorg_file,
 						container, false);
@@ -322,7 +321,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				rV.findViewById(R.id.go_action_bar).setVisibility(View.GONE);
 				Toast.makeText(getActivity(),
 						"Oops! No Media.", Toast.LENGTH_LONG).show();
-				Log.e(GALLORG, "Oops! empty URI list: " + uriList.toString());
+				Log.e(LOGTAG, "Oops! empty URI list: " + uriList.toString());
 				return rV;
 			}
 
@@ -339,7 +338,7 @@ public class OrganizeActivity extends FragmentActivity implements
 			} else {
 				gallorg_root = new File(pref_gallery_root);
 			}
-			Log.i(GALLORG, gallorg_root.getPath());
+			Log.i(LOGTAG, gallorg_root.getPath());
 
 			/** generate album list from gallery root. **/
 			ArrayList<CharSequence> dirStrList = new ArrayList<CharSequence> ();
@@ -361,7 +360,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				Toast.makeText(getActivity(), "gallorg_root does not exist or...",
 						Toast.LENGTH_SHORT).show();
 			}
-			Log.d(GALLORG, dirStrList.toString());
+			Log.d(LOGTAG, dirStrList.toString());
 
 			spAlbums = (Spinner) rV.findViewById(R.id.go_albums_spinner);
 			aaAlbums = new ArrayAdapter <CharSequence> (this
@@ -449,7 +448,7 @@ public class OrganizeActivity extends FragmentActivity implements
 							.get(position).toString(), width, width);
 					return bmp;
 				} catch (IndexOutOfBoundsException e) {
-					Log.w(GALLORG, "out of bounds exception occur! ignore!");
+					Log.w(LOGTAG, "out of bounds exception occur! ignore!");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -468,7 +467,7 @@ public class OrganizeActivity extends FragmentActivity implements
 			public void onClick(View v) {
 				switch (v.getId()) {
 				case R.id.go_action_move:
-					Log.d(GALLORG, "let's move to " + gallorg_dest.toString());
+					Log.d(LOGTAG, "let's move to " + gallorg_dest.toString());
 					// exchange target selector with progress bar.
 					rV.findViewById(R.id.go_dest_bar).setVisibility(View.GONE);
 					pb = (ProgressBar) rV.findViewById(R.id.go_progressbar);
@@ -503,14 +502,14 @@ public class OrganizeActivity extends FragmentActivity implements
 				// work-around for checking if same partition.
 				if (src.getParentFile().getTotalSpace()
 						== dst.getParentFile().getTotalSpace()) {
-					Log.d(GALLORG, "ok, moveFile within same partition...");
+					Log.d(LOGTAG, "ok, moveFile within same partition...");
 					if (src.renameTo(dst)) {
 						return true;
 					} else {
 						return false;
 					}
 				} else {
-					Log.d(GALLORG, "ok, moveFile across partitions...");
+					Log.d(LOGTAG, "ok, moveFile across partitions...");
 					try {
 						FileInputStream input = new FileInputStream(src);
 						FileOutputStream output = new FileOutputStream(dst);
@@ -541,16 +540,15 @@ public class OrganizeActivity extends FragmentActivity implements
 						MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 						file.toString());
 				if (uri == null) {
-					Log.w(GALLORG, "uri for " + file + "is null. skip.");
-					// TODO just delete manually.
+					Log.w(LOGTAG, "uri for " + file + "is null. skip.");
 					return false;
 				}
-				Log.d(GALLORG, "about to delete " + file + ", " + uri.toString());
+				Log.d(LOGTAG, "about to delete " + file + ", " + uri.toString());
 				if (1 == msh.delete(uri)) {
-					Log.d(GALLORG, "ok, " + file.getName() + " deleted.");
+					Log.i(LOGTAG, "ok, " + file.getName() + " deleted.");
 					return true;
 				} else {
-					Log.d(GALLORG, "XXX oops! how many?");
+					Log.e(LOGTAG, "XXX oops! how many?");
 					return false;
 				}
 			}
@@ -568,19 +566,19 @@ public class OrganizeActivity extends FragmentActivity implements
 							File dest = new File(gallorg_dest.getAbsolutePath()
 									+ "/" + file.getName());
 							long file_size = file.length();
-							Log.d(GALLORG, "move " + file.getAbsolutePath()
+							Log.d(LOGTAG, "move " + file.getAbsolutePath()
 									+ " to " + dest.getAbsolutePath());
 
 							if (dest.exists()) {	// do nothing for this.
-								Log.w(GALLORG,
+								Log.w(LOGTAG,
 										"file already exists!" + dest.toString());
 								isFullyMoved = false;
 							} else if (moveFile(file, dest)) {
-								Log.d(GALLORG, "ok, moved to " + dest.toString());
+								Log.d(LOGTAG, "ok, moved to " + dest.toString());
 								MediaStoreHelper msh = new MediaStoreHelper(
 										getActivity());
 								Uri uri = msh.insert(dest);
-								Log.d(GALLORG, "- new uri: " + uri);
+								Log.d(LOGTAG, "- new uri: " + uri);
 								//msh.scanDir(gallorg_dest.toString());
 								e.remove();
 								if (dest.exists() == true
@@ -588,7 +586,7 @@ public class OrganizeActivity extends FragmentActivity implements
 									deleteFile(file);
 								}
 							} else {
-								Log.e(GALLORG,
+								Log.e(LOGTAG,
 										"oops! error on moving!" + file.toString());
 								isFullyMoved = false;
 							}
@@ -599,18 +597,8 @@ public class OrganizeActivity extends FragmentActivity implements
 									pb.setProgress(100 * count / total);
 								}
 							});
-							/*
-							if (count % 5 == 0) {
-								handler.post(new Runnable() { // gridview per 5.
-									public void run() {
-										((ImageAdapter) gv.getAdapter())
-												.notifyDataSetChanged();
-									}
-								});
-							}
-							*/
 						}
-						Log.i(GALLORG, "good! isFullyMoved: " + isFullyMoved);
+						Log.i(LOGTAG, "good! isFullyMoved: " + isFullyMoved);
 						handler.post(new Runnable() { // final ui update
 							public void run() {
 								((ImageAdapter) gv.getAdapter())
@@ -629,11 +617,6 @@ public class OrganizeActivity extends FragmentActivity implements
 										.setVisibility(View.VISIBLE);
 							}
 						});
-						/*
-						getActivity().sendBroadcast(new Intent(Intent
-								.ACTION_MEDIA_MOUNTED, Uri.parse("file://"
-										+ gallorg_dest)));
-						*/
 					}
 				}).start();
 				return true;
@@ -655,7 +638,7 @@ public class OrganizeActivity extends FragmentActivity implements
 				} else {
 					gallorg_dest = new File(gallorg_root + "/" + selected);
 				}
-				Log.d(GALLORG, "gallorg dest is " + gallorg_dest.toString());
+				Log.d(LOGTAG, "gallorg dest is " + gallorg_dest.toString());
 				Toast.makeText(parent.getContext(), "dest is " + gallorg_dest.toString(),
 						Toast.LENGTH_SHORT).show();
 			}
@@ -675,7 +658,7 @@ public class OrganizeActivity extends FragmentActivity implements
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								new_album = input.getText().toString().trim();
-								Log.d(GALLORG, "new album name: " + new_album);
+								Log.d(LOGTAG, "new album name: " + new_album);
 								aaAlbums.add(new_album);
 								aaAlbums.notifyDataSetChanged();
 								spAlbums.setSelection(spAlbums.getCount() - 1);
