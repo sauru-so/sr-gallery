@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Locale;
 
 import so.sauru.ImageUtils;
+import so.sauru.MediaStoreHelper;
 import so.sauru.UriUtils;
 
 import android.app.ActionBar;
@@ -27,6 +28,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images.Media;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -269,7 +272,7 @@ public class OrganizeActivity extends FragmentActivity implements
 		ProgressBar pb = null;
 		int total = 0;
 		int count = 0;
-		boolean movingStatus = true;
+		boolean isFullyMoved = true;
 
 		public FileSectionFragment() {
 		}
@@ -445,6 +448,8 @@ public class OrganizeActivity extends FragmentActivity implements
 					Bitmap bmp = ImageUtils.createThumbnail(fileList
 							.get(position).toString(), width, width);
 					return bmp;
+				} catch (IndexOutOfBoundsException e) {
+					Log.w(GALLORG, "out of bounds exception occur! ignore!");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -463,7 +468,7 @@ public class OrganizeActivity extends FragmentActivity implements
 			public void onClick(View v) {
 				switch (v.getId()) {
 				case R.id.go_action_move:
-					Log.d(GALLORG, "move to " + gallorg_dest.toString());
+					Log.d(GALLORG, "let's move to " + gallorg_dest.toString());
 					// exchange target selector with progress bar.
 					rV.findViewById(R.id.go_dest_bar).setVisibility(View.GONE);
 					pb = (ProgressBar) rV.findViewById(R.id.go_progressbar);
@@ -496,18 +501,16 @@ public class OrganizeActivity extends FragmentActivity implements
 
 			private boolean moveFile(File src, File dst) {
 				// work-around for checking if same partition.
-				Log.d(GALLORG, "src.getTotalSpace:" + src.getParentFile().getTotalSpace());
-				Log.d(GALLORG, "dst.getTotalSpace:" + dst.getParentFile().getTotalSpace());
 				if (src.getParentFile().getTotalSpace()
 						== dst.getParentFile().getTotalSpace()) {
-					Log.d(GALLORG, "moveFile: same partition...");
+					Log.d(GALLORG, "ok, moveFile within same partition...");
 					if (src.renameTo(dst)) {
 						return true;
 					} else {
 						return false;
 					}
 				} else {
-					Log.d(GALLORG, "moveFile: different partition...");
+					Log.d(GALLORG, "ok, moveFile across partitions...");
 					try {
 						FileInputStream input = new FileInputStream(src);
 						FileOutputStream output = new FileOutputStream(dst);
@@ -530,14 +533,26 @@ public class OrganizeActivity extends FragmentActivity implements
 					}
 					return true;
 				}
-				/*
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
+			}
+
+			private boolean deleteFile(File file) {
+				MediaStoreHelper msh = new MediaStoreHelper(getActivity());
+				Uri uri = msh.getContentUriFromFile(
+						MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+						file.toString());
+				if (uri == null) {
+					Log.w(GALLORG, "uri for " + file + "is null. skip.");
+					// TODO just delete manually.
+					return false;
 				}
-				return false;
-				*/
+				Log.d(GALLORG, "about to delete " + file + ", " + uri.toString());
+				if (1 == msh.delete(uri)) {
+					Log.d(GALLORG, "ok, " + file.getName() + " deleted.");
+					return true;
+				} else {
+					Log.d(GALLORG, "XXX oops! how many?");
+					return false;
+				}
 			}
 
 			private boolean moveFiles() {
@@ -552,38 +567,55 @@ public class OrganizeActivity extends FragmentActivity implements
 							File file = (File) e.next();
 							File dest = new File(gallorg_dest.getAbsolutePath()
 									+ "/" + file.getName());
-							Log.d(GALLORG, "rename " + file.getAbsolutePath()
+							long file_size = file.length();
+							Log.d(GALLORG, "move " + file.getAbsolutePath()
 									+ " to " + dest.getAbsolutePath());
 
-							// TODO check destination
-							if (moveFile(file, dest)) {
+							if (dest.exists()) {	// do nothing for this.
+								Log.w(GALLORG,
+										"file already exists!" + dest.toString());
+								isFullyMoved = false;
+							} else if (moveFile(file, dest)) {
+								Log.d(GALLORG, "ok, moved to " + dest.toString());
+								MediaStoreHelper msh = new MediaStoreHelper(
+										getActivity());
+								Uri uri = msh.insert(dest);
+								Log.d(GALLORG, "- new uri: " + uri);
+								//msh.scanDir(gallorg_dest.toString());
 								e.remove();
+								if (dest.exists() == true
+										&& file_size == dest.length()) {
+									deleteFile(file);
+								}
 							} else {
-								movingStatus = false;
+								Log.e(GALLORG,
+										"oops! error on moving!" + file.toString());
+								isFullyMoved = false;
 							}
 
 							count += 1;
-
-							handler.post(new Runnable() {
-								public void run() { // just progress per file.
+							handler.post(new Runnable() { // progress per file.
+								public void run() {
 									pb.setProgress(100 * count / total);
 								}
 							});
+							/*
 							if (count % 5 == 0) {
-								handler.post(new Runnable() {
-									public void run() { // update view per 5 files.
+								handler.post(new Runnable() { // gridview per 5.
+									public void run() {
 										((ImageAdapter) gv.getAdapter())
 												.notifyDataSetChanged();
 									}
 								});
 							}
+							*/
 						}
-						Log.i(GALLORG, "movingStatus: " + movingStatus);
-						handler.post(new Runnable() {
-							public void run() { // final update.
+						Log.i(GALLORG, "good! isFullyMoved: " + isFullyMoved);
+						handler.post(new Runnable() { // final ui update
+							public void run() {
 								((ImageAdapter) gv.getAdapter())
 										.notifyDataSetChanged();
-								if (movingStatus) {
+								if (isFullyMoved) {
 									Toast.makeText(getActivity(), getResources()
 											.getString(R.string.go_move_all_done),
 											Toast.LENGTH_SHORT).show();
@@ -597,6 +629,11 @@ public class OrganizeActivity extends FragmentActivity implements
 										.setVisibility(View.VISIBLE);
 							}
 						});
+						/*
+						getActivity().sendBroadcast(new Intent(Intent
+								.ACTION_MEDIA_MOUNTED, Uri.parse("file://"
+										+ gallorg_dest)));
+						*/
 					}
 				}).start();
 				return true;

@@ -57,6 +57,7 @@ public class ImageUtils {
 		BitmapFactory.Options options = new BitmapFactory.Options();
 		int img_w = getWidth(filename);
 		int img_h = getHeight(filename);
+		// TODO size check!
 
 		if (((float) img_w / (float) img_h) > ((float) w/ (float) h)) {
 			w = (int) Math.round((float) h * (float) img_w / (float) img_h);
@@ -78,9 +79,13 @@ public class ImageUtils {
 		Log.d("ImageUtils", "filename:" + filename + " sample:" + options.inSampleSize
 				+ " dim:" + img_w + "x" + img_h + " " + w + "x" + h);
 
-		Bitmap src = BitmapFactory.decodeFile(filename, options);
-		Bitmap bmp = Bitmap.createScaledBitmap(src, w, h, true);
+		Bitmap src = null;
+		Bitmap bmp = null;
 		try {
+			src = BitmapFactory.decodeFile(filename, options);
+			bmp = Bitmap.createScaledBitmap(src, w, h, true);
+			// TODO null check!
+
 			ExifInterface exif = new ExifInterface(filename);
 			int orientation = Integer.parseInt(exif
 					.getAttribute(ExifInterface.TAG_ORIENTATION));
