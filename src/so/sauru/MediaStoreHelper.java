@@ -68,7 +68,7 @@ public class MediaStoreHelper {
 		Log.d(LOGTAG, "ready to insert " + file.toString());
 		MediaScanner ms = new MediaScanner(context);
 		ms.scanFile(file.toString(), null);
-		//try { Thread.sleep(1000); } catch (Exception e) {}
+		try { Thread.sleep(200); } catch (Exception e) {}
 		Log.d(LOGTAG, "about to return!");
 		return getContentUriFromFile(MediaStore.Images.Media
 				.EXTERNAL_CONTENT_URI, file.toString());
